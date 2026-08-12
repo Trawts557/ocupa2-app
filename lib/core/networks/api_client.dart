@@ -1,11 +1,15 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:ocupa2_app/services/session_service.dart';
 
 class ApiClient {
   static const String baseUrl = 'https://ocupa2.ia3x.com/apix';
+  final SessionService _sessionService = SessionService();
+  
+  Future<Map<String, String>> _headers() async {
+    final token = await _sessionService.getToken();
 
-  Map<String, String> _headers({String? token}) {
     return {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -21,7 +25,7 @@ class ApiClient {
 
     return await http.get(
       url,
-      headers: _headers(token: token),
+      headers: await _headers(),
     );
   }
 
@@ -34,7 +38,7 @@ class ApiClient {
 
     return await http.post(
       url,
-      headers: _headers(token: token),
+      headers: await _headers(),
       body: body != null ? jsonEncode(body) : null,
     );
   }
@@ -48,7 +52,7 @@ class ApiClient {
 
     return await http.put(
       url,
-      headers: _headers(token: token),
+      headers: await _headers(),
       body: body != null ? jsonEncode(body) : null,
     );
   }
@@ -62,7 +66,7 @@ class ApiClient {
 
     return await http.patch(
       url,
-      headers: _headers(token: token),
+      headers: await _headers(),
       body: body != null ? jsonEncode(body) : null,
     );
   }
@@ -76,7 +80,7 @@ class ApiClient {
 
     return await http.delete(
       url,
-      headers: _headers(token: token),
+      headers: await _headers(),
       body: body != null ? jsonEncode(body) : null,
     );
   }
