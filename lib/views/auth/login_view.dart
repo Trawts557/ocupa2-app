@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ocupa2_app/views/home/home_view.dart';
+import '../home/main_navigation_view.dart';
 import 'forgot_password_view.dart';
 import 'register_view.dart';
 import '../../services/auth_service.dart';
@@ -199,7 +199,7 @@ class _LoginViewState extends State<LoginView> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeView()),
+        MaterialPageRoute(builder: (context) => const MainNavigationView()),
       );
     } catch (e) {
       if (!mounted) return;

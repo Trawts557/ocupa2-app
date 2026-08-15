@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ocupa2_app/services/auth_service.dart';
-import 'package:ocupa2_app/views/home/home_view.dart';
+import '../home/main_navigation_view.dart';
 
 class CompleteProfileView extends StatefulWidget {
   const CompleteProfileView({super.key});
@@ -222,7 +222,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeView()),
+        MaterialPageRoute(builder: (context) => const MainNavigationView()),
       );
     } catch (e) {
       if (!mounted) return;
