@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:ocupa2_app/views/profile/profile_view.dart';
 import '../../services/session_service.dart';
 import '../auth/login_view.dart';
 import 'home_view.dart';
@@ -92,12 +92,8 @@ class _MainNavigationViewState extends State<MainNavigationView> {
         );
 
       case 3:
-        // TODO: Reemplazar por la vista real de Persona 4.
-        // return const ProfileView();
-        return const Center(
-          child: Text('Mi perfil'),
-        );
-
+         return const ProfileView();
+      
       default:
         return const HomeView();
     }
