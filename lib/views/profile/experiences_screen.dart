@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:ocupa2_app/views/profile/experience_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -202,6 +202,7 @@ class _ExperiencesScreenState extends State<ExperiencesScreen> {
 }
 
 /// Tarjeta individual de experiencia.
+/// Tarjeta individual de experiencia (ahora clickeable).
 class _ExperienceCard extends StatelessWidget {
   final Experience experience;
   final VoidCallback onDelete;
@@ -215,55 +216,85 @@ class _ExperienceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _CertificateThumb(url: experience.certificateUrl),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        experience.title ?? 'Sin título',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        experience.description ?? 'Sin descripción',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Eliminar',
-                  icon: const Icon(Icons.delete_outline),
-                  color: Theme.of(context).colorScheme.error,
-                  onPressed: onDelete,
-                ),
-              ],
-            ),
-            if (experience.startDate != null || experience.endDate != null) ...[
-              const SizedBox(height: 12),
+      child: InkWell(
+        onTap: () => _navigateToDetail(context),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.calendar_today, size: 16, color: AppColors.primary),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${_formatDate(experience.startDate)} - ${_formatDate(experience.endDate)}',
-                    style: Theme.of(context).textTheme.bodySmall,
+                  _CertificateThumb(url: experience.certificateUrl),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          experience.title ?? 'Sin título',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          experience.description ?? 'Sin descripción',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Eliminar',
+                    icon: const Icon(Icons.delete_outline),
+                    color: Theme.of(context).colorScheme.error,
+                    onPressed: onDelete,
                   ),
                 ],
               ),
+              if (experience.startDate != null || experience.endDate != null) ...[
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Icon(Icons.calendar_today, size: 16, color: AppColors.primary),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${_formatDate(experience.startDate)} - ${_formatDate(experience.endDate)}',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'Toca para ver detalles',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.primary,
+                          fontStyle: FontStyle.italic,
+                        ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(Icons.arrow_forward_ios, size: 12, color: AppColors.primary),
+                ],
+              ),
             ],
-          ],
+          ),
         ),
+      ),
+    );
+  }
+
+  void _navigateToDetail(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ExperienceDetailScreen(experience: experience),
       ),
     );
   }
