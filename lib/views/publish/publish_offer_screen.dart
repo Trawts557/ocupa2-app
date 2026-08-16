@@ -5,12 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
+import 'package:ocupa2_app/models/create_offer_request.dart';
 import 'package:ocupa2_app/models/job_type.dart';
-import 'package:ocupa2_app/models/offer.dart';
-import 'package:ocupa2_app/models/payment.dart';
-import 'package:ocupa2_app/services/publish_service.dart';
 import 'package:ocupa2_app/services/payment_service.dart';
-import 'package:ocupa2_app/views/payments/card_payment_screen.dart';
+import 'package:ocupa2_app/services/publish_service.dart';
 
 class PublishOfferScreen extends StatefulWidget {
   final PublishService publishService;
@@ -23,10 +21,12 @@ class PublishOfferScreen extends StatefulWidget {
   });
 
   @override
-  State<PublishOfferScreen> createState() => _PublishOfferScreenState();
+  State<PublishOfferScreen> createState() =>
+      _PublishOfferScreenState();
 }
 
-class _PublishOfferScreenState extends State<PublishOfferScreen> {
+class _PublishOfferScreenState
+    extends State<PublishOfferScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _addressController = TextEditingController();
@@ -35,25 +35,36 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
   final _latController = TextEditingController();
   final _lngController = TextEditingController();
 
-  final Map<String, TextEditingController> _dynamicTextControllers = {};
-  final Map<String, DateTime?> _dynamicDateValues = {};
-  final Map<String, String?> _dynamicSelectValues = {};
-  final Map<String, bool> _dynamicCheckValues = {};
+  final Map<String, TextEditingController>
+      _dynamicTextControllers = {};
+
+  final Map<String, DateTime?>
+      _dynamicDateValues = {};
+
+  final Map<String, String?>
+      _dynamicSelectValues = {};
+
+  final Map<String, bool>
+      _dynamicCheckValues = {};
 
   List<JobType> _jobTypes = [];
+
   JobType? _selectedType;
 
   String _contractType = 'temporal';
 
   DateTime? _deadline;
+
   File? _photoFile;
 
   bool _loading = true;
+
   bool _submitting = false;
 
   @override
   void initState() {
     super.initState();
+
     _loadJobTypes();
   }
 
@@ -65,16 +76,22 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
     _latController.dispose();
     _lngController.dispose();
 
-    for (final controller in _dynamicTextControllers.values) {
+    for (final controller
+        in _dynamicTextControllers.values) {
       controller.dispose();
     }
 
     super.dispose();
   }
 
+  // ============================================================
+  // CARGAR TIPOS DE EMPLEO
+  // ============================================================
+
   Future<void> _loadJobTypes() async {
     try {
-      final types = await widget.publishService.getJobTypes();
+      final types =
+          await widget.publishService.getJobTypes();
 
       if (!mounted) return;
 
@@ -89,13 +106,19 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
         _loading = false;
       });
 
-      _showError('No se pudieron cargar los tipos de empleo');
+      _showError(
+        'No se pudieron cargar los tipos de empleo',
+      );
     }
   }
 
+  // ============================================================
+  // CAMBIAR TIPO DE EMPLEO
+  // ============================================================
+
   void _onJobTypeChanged(JobType? type) {
-    // Liberar los controladores anteriores antes de eliminarlos.
-    for (final controller in _dynamicTextControllers.values) {
+    for (final controller
+        in _dynamicTextControllers.values) {
       controller.dispose();
     }
 
@@ -108,7 +131,8 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
       _dynamicCheckValues.clear();
 
       if (type != null) {
-        for (final field in type.customFields) {
+        for (final field
+            in type.customFields) {
           switch (field.type) {
             case 'text':
               _dynamicTextControllers[field.key] =
@@ -116,15 +140,18 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
               break;
 
             case 'date':
-              _dynamicDateValues[field.key] = null;
+              _dynamicDateValues[field.key] =
+                  null;
               break;
 
             case 'select':
-              _dynamicSelectValues[field.key] = null;
+              _dynamicSelectValues[field.key] =
+                  null;
               break;
 
             case 'check':
-              _dynamicCheckValues[field.key] = false;
+              _dynamicCheckValues[field.key] =
+                  false;
               break;
           }
         }
@@ -132,14 +159,20 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
     });
   }
 
+  // ============================================================
+  // FECHA LÍMITE
+  // ============================================================
+
   Future<void> _pickDeadline() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().add(
+      initialDate:
+          DateTime.now().add(
         const Duration(days: 7),
       ),
       firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(
+      lastDate:
+          DateTime.now().add(
         const Duration(days: 365),
       ),
     );
@@ -151,83 +184,129 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
     }
   }
 
-  Future<void> _pickDynamicDate(String key) async {
+  // ============================================================
+  // FECHAS DINÁMICAS
+  // ============================================================
+
+  Future<void> _pickDynamicDate(
+    String key,
+  ) async {
     final picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(
+      firstDate:
+          DateTime.now().subtract(
         const Duration(days: 365),
       ),
-      lastDate: DateTime.now().add(
+      lastDate:
+          DateTime.now().add(
         const Duration(days: 365),
       ),
     );
 
     if (picked != null) {
       setState(() {
-        _dynamicDateValues[key] = picked;
+        _dynamicDateValues[key] =
+            picked;
       });
     }
   }
 
+  // ============================================================
+  // SELECCIONAR FOTO
+  // ============================================================
+
   Future<void> _pickPhoto() async {
     final picker = ImagePicker();
 
-    final picked = await picker.pickImage(
+    final picked =
+        await picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 70,
     );
 
     if (picked != null) {
       setState(() {
-        _photoFile = File(picked.path);
+        _photoFile =
+            File(picked.path);
       });
     }
   }
 
-  Map<String, dynamic> _collectDynamicAnswers() {
-    final answers = <String, dynamic>{};
+  // ============================================================
+  // CAMPOS DINÁMICOS
+  // ============================================================
 
-    _dynamicTextControllers.forEach((key, controller) {
-      answers[key] = controller.text;
-    });
+  Map<String, dynamic>
+      _collectDynamicAnswers() {
+    final answers =
+        <String, dynamic>{};
 
-    _dynamicDateValues.forEach((key, date) {
-      if (date != null) {
-        answers[key] = date.toIso8601String();
-      }
-    });
+    _dynamicTextControllers
+        .forEach(
+      (key, controller) {
+        answers[key] =
+            controller.text;
+      },
+    );
 
-    _dynamicSelectValues.forEach((key, value) {
-      if (value != null) {
+    _dynamicDateValues
+        .forEach(
+      (key, date) {
+        if (date != null) {
+          answers[key] =
+              date.toIso8601String();
+        }
+      },
+    );
+
+    _dynamicSelectValues
+        .forEach(
+      (key, value) {
+        if (value != null) {
+          answers[key] = value;
+        }
+      },
+    );
+
+    _dynamicCheckValues
+        .forEach(
+      (key, value) {
         answers[key] = value;
-      }
-    });
-
-    _dynamicCheckValues.forEach((key, value) {
-      answers[key] = value;
-    });
+      },
+    );
 
     return answers;
   }
 
+  // ============================================================
+  // PUBLICAR OFERTA
+  // ============================================================
+
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
+    if (!_formKey.currentState!
+        .validate()) {
       return;
     }
 
     if (_selectedType == null) {
-      _showError('Selecciona un tipo de empleo');
+      _showError(
+        'Selecciona un tipo de empleo',
+      );
       return;
     }
 
     if (_photoFile == null) {
-      _showError('La foto del empleo es obligatoria');
+      _showError(
+        'La foto del empleo es obligatoria',
+      );
       return;
     }
 
     if (_deadline == null) {
-      _showError('Selecciona la fecha límite para aplicar');
+      _showError(
+        'Selecciona la fecha límite para aplicar',
+      );
       return;
     }
 
@@ -236,75 +315,128 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
     });
 
     try {
-      // Convertir imagen a Base64.
-      final bytes = await _photoFile!.readAsBytes();
-      final base64Image = base64Encode(bytes);
+      // --------------------------------------------------------
+      // 1. Convertir imagen a Base64
+      // --------------------------------------------------------
 
-      // Subir imagen al API.
+      final bytes =
+          await _photoFile!.readAsBytes();
+
+      final base64Image =
+          base64Encode(bytes);
+
+      // --------------------------------------------------------
+      // 2. Subir imagen
+      // --------------------------------------------------------
+
       final photoUrl =
-          await widget.publishService.uploadImage(base64Image);
-
-      // Recoger campos dinámicos.
-      final dynamicAnswers = _collectDynamicAnswers();
-
-      debugPrint('Respuestas dinámicas: $dynamicAnswers');
-
-      // Crear oferta.
-      final draftOffer = Offer(
-        id: '',
-        jobTypeId: _selectedType!.id,
-        contractType: _contractType,
-        latitude:
-            double.tryParse(_latController.text.replaceAll(',', '.')) ??
-                0,
-        longitude:
-            double.tryParse(_lngController.text.replaceAll(',', '.')) ??
-                0,
-        address: _addressController.text.trim(),
-        pay:
-            double.tryParse(_payController.text.replaceAll(',', '.')) ??
-                0,
-        description: _descriptionController.text.trim(),
-        photoUrl: photoUrl,
-        deadline: _deadline!,
-        active: true,
+          await widget.publishService
+              .uploadImage(
+        base64Image,
       );
 
-      
+      // --------------------------------------------------------
+      // 3. Recoger campos dinámicos
+      // --------------------------------------------------------
 
-      final published =
-          await widget.publishService.publishOffer(draftOffer);
+      final dynamicAnswers =
+          _collectDynamicAnswers();
+
+      debugPrint(
+        'Respuestas dinámicas: '
+        '$dynamicAnswers',
+      );
+
+      // --------------------------------------------------------
+      // 4. Crear CreateOfferRequest
+      // --------------------------------------------------------
+
+      final offer =
+          CreateOfferRequest(
+        jobTypeId:
+            _selectedType!.id,
+
+        contractType:
+            _contractType,
+
+        latitude:
+            double.tryParse(
+                  _latController.text
+                      .replaceAll(
+                    ',',
+                    '.',
+                  ),
+                ) ??
+                0,
+
+        longitude:
+            double.tryParse(
+                  _lngController.text
+                      .replaceAll(
+                    ',',
+                    '.',
+                  ),
+                ) ??
+                0,
+
+        address:
+            _addressController.text
+                .trim(),
+
+        pay:
+            double.tryParse(
+                  _payController.text
+                      .replaceAll(
+                    ',',
+                    '.',
+                  ),
+                ) ??
+                0,
+
+        description:
+            _descriptionController
+                .text
+                .trim(),
+
+        photoUrl:
+            photoUrl,
+
+        deadline:
+            _deadline!,
+      );
+
+      // --------------------------------------------------------
+      // 5. Publicar
+      // --------------------------------------------------------
+
+      await widget.publishService
+          .publishOffer(offer);
 
       if (!mounted) return;
 
-      // Ir al pago después de publicar la oferta.
-      final payment = await Navigator.push<Payment>(
-        context,
-        MaterialPageRoute(
-          builder: (_) => CardPaymentScreen(
-            paymentService: widget.paymentService,
-            offerId: published.id,
+      // --------------------------------------------------------
+      // 6. Confirmación
+      // --------------------------------------------------------
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Oferta publicada correctamente',
           ),
         ),
       );
 
-      if (payment != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Oferta publicada y pago confirmado',
-            ),
-          ),
-        );
-
-        Navigator.pop(context, published);
-      }
+      Navigator.pop(
+        context,
+        offer,
+      );
     } catch (e) {
-      if (mounted) {
-        _showError(
-          'No se pudo publicar la oferta: $e',
-        );
-      }
+      if (!mounted) return;
+
+      _showError(
+        'No se pudo publicar la oferta: $e',
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -314,53 +446,88 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
     }
   }
 
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
+  // ============================================================
+  // ERROR
+  // ============================================================
+
+  void _showError(
+    String message,
+  ) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
       SnackBar(
         content: Text(message),
       ),
     );
   }
 
+  // ============================================================
+  // BUILD
+  // ============================================================
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     if (_loading) {
       return const Scaffold(
         body: Center(
-          child: CircularProgressIndicator(),
+          child:
+              CircularProgressIndicator(),
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Publicar oferta'),
+        title: const Text(
+          'Publicar oferta',
+        ),
       ),
       body: _submitting
           ? const Center(
-              child: CircularProgressIndicator(),
+              child:
+                  CircularProgressIndicator(),
             )
           : Form(
               key: _formKey,
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                padding:
+                    const EdgeInsets.all(
+                  16,
+                ),
                 children: [
-                  // Tipo de empleo
-                  DropdownButtonFormField<JobType>(
-                    decoration: const InputDecoration(
-                      labelText: 'Tipo de empleo',
+
+                  // ==================================================
+                  // TIPO DE EMPLEO
+                  // ==================================================
+
+                  DropdownButtonFormField<
+                      JobType>(
+                    decoration:
+                        const InputDecoration(
+                      labelText:
+                          'Tipo de empleo',
                     ),
                     items: _jobTypes
                         .map(
-                          (type) => DropdownMenuItem<JobType>(
+                          (type) =>
+                              DropdownMenuItem<
+                                  JobType>(
                             value: type,
-                            child: Text(type.name),
+                            child:
+                                Text(
+                              type.name,
+                            ),
                           ),
                         )
                         .toList(),
-                    onChanged: _onJobTypeChanged,
-                    validator: (value) {
-                      if (value == null) {
+                    onChanged:
+                        _onJobTypeChanged,
+                    validator:
+                        (value) {
+                      if (value ==
+                          null) {
                         return 'Selecciona un tipo';
                       }
 
@@ -368,48 +535,83 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
                     },
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(
+                    height: 16,
+                  ),
 
-                  // Tipo de contrato
-                  DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                      labelText: 'Tipo de contrato',
+                  // ==================================================
+                  // CONTRATO
+                  // ==================================================
+
+                  DropdownButtonFormField<
+                      String>(
+                    decoration:
+                        const InputDecoration(
+                      labelText:
+                          'Tipo de contrato',
                     ),
-                    initialValue: _contractType,
+                    initialValue:
+                        _contractType,
                     items: const [
                       DropdownMenuItem(
-                        value: 'temporal',
-                        child: Text('Temporal'),
+                        value:
+                            'temporal',
+                        child:
+                            Text(
+                          'Temporal',
+                        ),
                       ),
                       DropdownMenuItem(
                         value: 'fijo',
-                        child: Text('Fijo'),
+                        child:
+                            Text(
+                          'Fijo',
+                        ),
                       ),
                       DropdownMenuItem(
-                        value: 'por_horas',
-                        child: Text('Por horas'),
+                        value:
+                            'por_horas',
+                        child:
+                            Text(
+                          'Por horas',
+                        ),
                       ),
                     ],
-                    onChanged: (value) {
-                      if (value != null) {
+                    onChanged:
+                        (value) {
+                      if (value !=
+                          null) {
                         setState(() {
-                          _contractType = value;
+                          _contractType =
+                              value;
                         });
                       }
                     },
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(
+                    height: 16,
+                  ),
 
-                  // Dirección
+                  // ==================================================
+                  // DIRECCIÓN
+                  // ==================================================
+
                   TextFormField(
-                    controller: _addressController,
-                    decoration: const InputDecoration(
-                      labelText: 'Dirección',
+                    controller:
+                        _addressController,
+                    decoration:
+                        const InputDecoration(
+                      labelText:
+                          'Dirección',
                     ),
-                    validator: (value) {
-                      if (value == null ||
-                          value.trim().isEmpty) {
+                    validator:
+                        (value) {
+                      if (value ==
+                              null ||
+                          value
+                              .trim()
+                              .isEmpty) {
                         return 'Ingresa la dirección';
                       }
 
@@ -417,24 +619,39 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
                     },
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(
+                    height: 16,
+                  ),
 
-                  // Latitud y longitud
+                  // ==================================================
+                  // LATITUD Y LONGITUD
+                  // ==================================================
+
                   Row(
                     children: [
                       Expanded(
-                        child: TextFormField(
-                          controller: _latController,
+                        child:
+                            TextFormField(
+                          controller:
+                              _latController,
                           keyboardType:
-                              const TextInputType.numberWithOptions(
-                            decimal: true,
+                              const TextInputType
+                                  .numberWithOptions(
+                            decimal:
+                                true,
                           ),
-                          decoration: const InputDecoration(
-                            labelText: 'Latitud',
+                          decoration:
+                              const InputDecoration(
+                            labelText:
+                                'Latitud',
                           ),
-                          validator: (value) {
-                            if (value == null ||
-                                value.trim().isEmpty) {
+                          validator:
+                              (value) {
+                            if (value ==
+                                    null ||
+                                value
+                                    .trim()
+                                    .isEmpty) {
                               return 'Requerido';
                             }
 
@@ -443,21 +660,33 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
                         ),
                       ),
 
-                      const SizedBox(width: 12),
+                      const SizedBox(
+                        width: 12,
+                      ),
 
                       Expanded(
-                        child: TextFormField(
-                          controller: _lngController,
+                        child:
+                            TextFormField(
+                          controller:
+                              _lngController,
                           keyboardType:
-                              const TextInputType.numberWithOptions(
-                            decimal: true,
+                              const TextInputType
+                                  .numberWithOptions(
+                            decimal:
+                                true,
                           ),
-                          decoration: const InputDecoration(
-                            labelText: 'Longitud',
+                          decoration:
+                              const InputDecoration(
+                            labelText:
+                                'Longitud',
                           ),
-                          validator: (value) {
-                            if (value == null ||
-                                value.trim().isEmpty) {
+                          validator:
+                              (value) {
+                            if (value ==
+                                    null ||
+                                value
+                                    .trim()
+                                    .isEmpty) {
                               return 'Requerido';
                             }
 
@@ -468,30 +697,49 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(
+                    height: 16,
+                  ),
 
-                  // Pago
+                  // ==================================================
+                  // PAGO
+                  // ==================================================
+
                   TextFormField(
-                    controller: _payController,
+                    controller:
+                        _payController,
                     keyboardType:
-                        const TextInputType.numberWithOptions(
+                        const TextInputType
+                            .numberWithOptions(
                       decimal: true,
                     ),
-                    decoration: const InputDecoration(
-                      labelText: 'Pago ofrecido',
-                      prefixText: 'RD\$ ',
+                    decoration:
+                        const InputDecoration(
+                      labelText:
+                          'Pago ofrecido',
+                      prefixText:
+                          'RD\$ ',
                     ),
-                    validator: (value) {
-                      if (value == null ||
-                          value.trim().isEmpty) {
+                    validator:
+                        (value) {
+                      if (value ==
+                              null ||
+                          value
+                              .trim()
+                              .isEmpty) {
                         return 'Ingresa el pago';
                       }
 
-                      final pay = double.tryParse(
-                        value.replaceAll(',', '.'),
+                      final pay =
+                          double.tryParse(
+                        value.replaceAll(
+                          ',',
+                          '.',
+                        ),
                       );
 
-                      if (pay == null || pay <= 0) {
+                      if (pay == null ||
+                          pay <= 0) {
                         return 'Ingresa un pago válido';
                       }
 
@@ -499,18 +747,30 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
                     },
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(
+                    height: 16,
+                  ),
 
-                  // Descripción
+                  // ==================================================
+                  // DESCRIPCIÓN
+                  // ==================================================
+
                   TextFormField(
-                    controller: _descriptionController,
+                    controller:
+                        _descriptionController,
                     maxLines: 4,
-                    decoration: const InputDecoration(
-                      labelText: 'Descripción del trabajo',
+                    decoration:
+                        const InputDecoration(
+                      labelText:
+                          'Descripción del trabajo',
                     ),
-                    validator: (value) {
-                      if (value == null ||
-                          value.trim().isEmpty) {
+                    validator:
+                        (value) {
+                      if (value ==
+                              null ||
+                          value
+                              .trim()
+                              .isEmpty) {
                         return 'Ingresa una descripción';
                       }
 
@@ -518,147 +778,260 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
                     },
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(
+                    height: 16,
+                  ),
 
-                  // Fecha límite
+                  // ==================================================
+                  // FECHA LÍMITE
+                  // ==================================================
+
                   ListTile(
-                    contentPadding: EdgeInsets.zero,
+                    contentPadding:
+                        EdgeInsets.zero,
                     title: Text(
                       _deadline == null
                           ? 'Fecha límite para aplicar'
-                          : 'Fecha límite: ${DateFormat('dd/MM/yyyy').format(_deadline!)}',
+                          : 'Fecha límite: '
+                              '${DateFormat(
+                            'dd/MM/yyyy',
+                          ).format(
+                            _deadline!,
+                          )}',
                     ),
-                    trailing: const Icon(
+                    trailing:
+                        const Icon(
                       Icons.calendar_today,
                     ),
-                    onTap: _pickDeadline,
+                    onTap:
+                        _pickDeadline,
                   ),
 
                   const Divider(),
 
-                  // Campos dinámicos
-                  if (_selectedType != null &&
-                      _selectedType!.customFields.isNotEmpty) ...[
-                    const SizedBox(height: 8),
+                  // ==================================================
+                  // CAMPOS DINÁMICOS
+                  // ==================================================
 
-                    Text(
-                      'Detalles adicionales de ${_selectedType!.name}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium,
+                  if (_selectedType !=
+                          null &&
+                      _selectedType!
+                          .customFields
+                          .isNotEmpty) ...[
+                    const SizedBox(
+                      height: 8,
                     ),
 
-                    const SizedBox(height: 8),
+                    Text(
+                      'Detalles adicionales de '
+                      '${_selectedType!.name}',
+                      style:
+                          Theme.of(
+                        context,
+                      )
+                              .textTheme
+                              .titleMedium,
+                    ),
 
-                    ..._selectedType!.customFields
-                        .map(_buildDynamicField),
+                    const SizedBox(
+                      height: 8,
+                    ),
+
+                    ..._selectedType!
+                        .customFields
+                        .map(
+                          _buildDynamicField,
+                        ),
                   ],
 
-                  const SizedBox(height: 16),
-
-                  // Foto
-                  Text(
-                    'Foto del empleo *',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium,
+                  const SizedBox(
+                    height: 16,
                   ),
 
-                  const SizedBox(height: 8),
+                  // ==================================================
+                  // FOTO
+                  // ==================================================
 
-                  if (_photoFile != null)
+                  Text(
+                    'Foto del empleo *',
+                    style:
+                        Theme.of(
+                      context,
+                    )
+                            .textTheme
+                            .titleMedium,
+                  ),
+
+                  const SizedBox(
+                    height: 8,
+                  ),
+
+                  if (_photoFile !=
+                      null)
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
+                      borderRadius:
+                          BorderRadius
+                              .circular(
+                        8,
+                      ),
+                      child:
+                          Image.file(
                         _photoFile!,
                         height: 180,
-                        width: double.infinity,
+                        width:
+                            double.infinity,
                         fit: BoxFit.cover,
                       ),
                     ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(
+                    height: 8,
+                  ),
 
-                  OutlinedButton.icon(
-                    onPressed: _pickPhoto,
-                    icon: const Icon(
-                      Icons.photo_camera,
+                  OutlinedButton
+                      .icon(
+                    onPressed:
+                        _pickPhoto,
+                    icon:
+                        const Icon(
+                      Icons
+                          .photo_camera,
                     ),
                     label: Text(
-                      _photoFile == null
+                      _photoFile ==
+                              null
                           ? 'Seleccionar foto'
                           : 'Cambiar foto',
                     ),
                   ),
 
-                  const SizedBox(height: 32),
+                  const SizedBox(
+                    height: 32,
+                  ),
 
-                  // Publicar
+                  // ==================================================
+                  // PUBLICAR
+                  // ==================================================
+
                   ElevatedButton(
-                    onPressed: _submit,
-                    child: const Text(
-                      'Publicar y pagar 1 USD',
+                    onPressed:
+                        _submit,
+                    child:
+                        const Text(
+                      'Publicar oferta',
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(
+                    height: 24,
+                  ),
                 ],
               ),
             ),
     );
   }
 
-  Widget _buildDynamicField(JobTypeField field) {
+  // ============================================================
+  // CAMPOS DINÁMICOS
+  // ============================================================
+
+  Widget _buildDynamicField(
+    JobTypeField field,
+  ) {
     switch (field.type) {
+
       case 'text':
         return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: TextFormField(
-            controller: _dynamicTextControllers[field.key],
-            decoration: InputDecoration(
-              labelText: field.label,
+          padding:
+              const EdgeInsets.only(
+            bottom: 16,
+          ),
+          child:
+              TextFormField(
+            controller:
+                _dynamicTextControllers[
+                    field.key],
+            decoration:
+                InputDecoration(
+              labelText:
+                  field.label,
             ),
           ),
         );
 
       case 'date':
-        final selectedDate = _dynamicDateValues[field.key];
+        final selectedDate =
+            _dynamicDateValues[
+                field.key];
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding:
+              const EdgeInsets.only(
+            bottom: 16,
+          ),
           child: ListTile(
-            contentPadding: EdgeInsets.zero,
+            contentPadding:
+                EdgeInsets.zero,
             title: Text(
               selectedDate == null
                   ? field.label
-                  : '${field.label}: ${DateFormat('dd/MM/yyyy').format(selectedDate)}',
+                  : '${field.label}: '
+                      '${DateFormat(
+                    'dd/MM/yyyy',
+                  ).format(
+                    selectedDate,
+                  )}',
             ),
-            trailing: const Icon(
+            trailing:
+                const Icon(
               Icons.calendar_today,
             ),
-            onTap: () => _pickDynamicDate(field.key),
+            onTap: () =>
+                _pickDynamicDate(
+              field.key,
+            ),
           ),
         );
 
       case 'select':
         return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: DropdownButtonFormField<String>(
-            decoration: InputDecoration(
-              labelText: field.label,
+          padding:
+              const EdgeInsets.only(
+            bottom: 16,
+          ),
+          child:
+              DropdownButtonFormField<
+                  String>(
+            decoration:
+                InputDecoration(
+              labelText:
+                  field.label,
             ),
-            initialValue: _dynamicSelectValues[field.key],
-            items: (field.options ?? [])
-                .map(
-                  (option) => DropdownMenuItem<String>(
-                    value: option,
-                    child: Text(option),
-                  ),
-                )
-                .toList(),
-            onChanged: (value) {
+            initialValue:
+                _dynamicSelectValues[
+                    field.key],
+            items:
+                (field.options ??
+                        [])
+                    .map(
+                      (option) =>
+                          DropdownMenuItem<
+                              String>(
+                        value:
+                            option,
+                        child:
+                            Text(
+                          option,
+                        ),
+                      ),
+                    )
+                    .toList(),
+            onChanged:
+                (value) {
               setState(() {
-                _dynamicSelectValues[field.key] = value;
+                _dynamicSelectValues[
+                        field.key] =
+                    value;
               });
             },
           ),
@@ -666,21 +1039,34 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
 
       case 'check':
         return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: CheckboxListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(field.label),
-            value: _dynamicCheckValues[field.key] ?? false,
-            onChanged: (value) {
+          padding:
+              const EdgeInsets.only(
+            bottom: 8,
+          ),
+          child:
+              CheckboxListTile(
+            contentPadding:
+                EdgeInsets.zero,
+            title:
+                Text(field.label),
+            value:
+                _dynamicCheckValues[
+                        field.key] ??
+                    false,
+            onChanged:
+                (value) {
               setState(() {
-                _dynamicCheckValues[field.key] = value ?? false;
+                _dynamicCheckValues[
+                        field.key] =
+                    value ?? false;
               });
             },
           ),
         );
 
       default:
-        return const SizedBox.shrink();
+        return const SizedBox
+            .shrink();
     }
   }
 }
