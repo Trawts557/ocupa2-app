@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ocupa2_app/views/profile/profile_view.dart';
+
+import '../profile/profile_view.dart';
+import '../forum/forum_screen.dart';
 import '../../services/session_service.dart';
 import '../auth/login_view.dart';
 import 'home_view.dart';
@@ -35,9 +37,7 @@ class _MainNavigationViewState extends State<MainNavigationView> {
           ),
         ],
       ),
-
       body: _getSelectedView(),
-
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) {
@@ -57,14 +57,14 @@ class _MainNavigationViewState extends State<MainNavigationView> {
             label: 'Ofertas',
           ),
           NavigationDestination(
-            icon: Icon(Icons.add_business_outlined),
-            selectedIcon: Icon(Icons.add_business),
-            label: 'Publicar',
-          ),
-          NavigationDestination(
             icon: Icon(Icons.forum_outlined),
             selectedIcon: Icon(Icons.forum),
             label: 'Foro',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.add_business_outlined),
+            selectedIcon: Icon(Icons.add_business),
+            label: 'Publicar',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
@@ -80,25 +80,14 @@ class _MainNavigationViewState extends State<MainNavigationView> {
     switch (_selectedIndex) {
       case 0:
         return const HomeView();
-
       case 1:
-        // TODO: Reemplazar por la vista real de Persona 2 - te estamos esperando Gabriel.
-        // return const OffersView();
         return const Center(child: Text('Explorar ofertas'));
-
       case 2:
-        // TODO: Reemplazar por la vista real de Persona 3 - te estamos esperando Mayelin.
-        // return const PublishOfferView();
-        return const Center(child: Text('Publicar oferta'));
-
+        return const ForumScreen();
       case 3:
-      // TODO: Jesus aqui pondras lo del foro - te manda saludos Stwart.
-      // return const ForumView();;
-      return const Center(child: Text('Foro'));
-
+        return const Center(child: Text('Publicar oferta'));
       case 4:
-      return const ProfileView();
-
+        return const ProfileView();
       default:
         return const HomeView();
     }
@@ -108,19 +97,14 @@ class _MainNavigationViewState extends State<MainNavigationView> {
     switch (_selectedIndex) {
       case 0:
         return 'Ocupa2';
-
       case 1:
         return 'Explorar ofertas';
-
       case 2:
-        return 'Publicar oferta';
-
-      case 3:
         return 'Foro';
-
+      case 3:
+        return 'Publicar oferta';
       case 4:
         return 'Mi perfil';
-
       default:
         return 'Ocupa2';
     }
@@ -128,9 +112,7 @@ class _MainNavigationViewState extends State<MainNavigationView> {
 
   Future<void> _logout() async {
     await SessionService().deleteToken();
-
     if (!mounted) return;
-
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginView()),
