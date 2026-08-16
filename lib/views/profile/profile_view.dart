@@ -22,10 +22,6 @@ class ProfileView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Mi cuenta',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
             const SizedBox(height: 16),
 
             _ProfileMenuCard(
@@ -85,7 +81,7 @@ class ProfileView extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // ✅ NUEVO: acceso al módulo de Persona 1
+            // NUEVO: acceso al módulo de Persona 1
             _ProfileMenuCard(
               icon: Icons.lock_outline,
               title: 'Cambiar contraseña',

@@ -8,33 +8,32 @@ import 'package:ocupa2_app/core/theme/app_colors.dart';
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
-  // ⚠️ EDITA AQUÍ: reemplaza con los datos reales de tu equipo.
   static const List<_TeamMember> _team = [
     _TeamMember(
-      name: 'Integrante 1',
+      name: 'Stwart Amarante Nuñez',
       role: 'Persona 1 · Autenticación, perfil y rutas',
-      matricula: '20XXXXXX',
+      matricula: '2024-1805',
       phone: '+18095550001',
-      telegram: 'https://t.me/usuario1',
+      telegram: 'https://t.me/StwartA05',
     ),
     _TeamMember(
-      name: 'Integrante 2',
+      name: 'Gabriel Aníbal',
       role: 'Persona 2 · Ofertas y postulaciones',
-      matricula: '20XXXXXX',
+      matricula: '2023-0918 ',
       phone: '+18095550002',
       telegram: 'https://t.me/usuario2',
     ),
     _TeamMember(
-      name: 'Integrante 3',
+      name: 'Mayelin Segura Osoria',
       role: 'Persona 3 · Panel de ofertas y pagos',
-      matricula: '20XXXXXX',
+      matricula: '2022-0582',
       phone: '+18095550003',
       telegram: 'https://t.me/usuario3',
     ),
     _TeamMember(
       name: 'Jesus Gomez',
       role: 'Persona 4 · Perfil, seguimiento y contenido',
-      matricula: '20198911',
+      matricula: '2019-8911',
       phone: '+18095550004',
       telegram: 'https://t.me/jesusgomez',
     ),
