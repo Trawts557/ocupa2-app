@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:ocupa2_app/models/offer.dart';
 import 'package:ocupa2_app/models/application.dart';
 import 'package:ocupa2_app/services/publish_service.dart';
+import 'package:ocupa2_app/services/contract_service.dart';
+import 'contract_confirmation_screen.dart';
 
 class OfferApplicantsScreen extends StatefulWidget {
   final Offer offer;
   final PublishService publishService;
+  final ContractService contractService;
 
   const OfferApplicantsScreen({
     super.key,
     required this.offer,
     required this.publishService,
+    required this.contractService,
   });
 
   @override
@@ -28,9 +32,24 @@ class _OfferApplicantsScreenState extends State<OfferApplicantsScreen> {
 
   Future<void> _updateStatus(Application app, String status) async {
     await widget.publishService.updateApplication(app.id, status: status);
-    setState(() {
-      _future = widget.publishService.getOfferApplications(widget.offer.id);
-    });
+
+    if (status == 'ganador' && mounted) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ContractConfirmationScreen(
+            contractService: widget.contractService,
+            offerId: widget.offer.id,
+          ),
+        ),
+      );
+    }
+
+    if (mounted) {
+      setState(() {
+        _future = widget.publishService.getOfferApplications(widget.offer.id);
+      });
+    }
   }
 
   @override

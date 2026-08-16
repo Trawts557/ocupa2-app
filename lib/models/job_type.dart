@@ -3,15 +3,26 @@ class JobType {
   final String name;
   final List<JobTypeField> customFields;
 
-  JobType({required this.id, required this.name, required this.customFields});
+  JobType({
+    required this.id,
+    required this.name,
+    required this.customFields,
+  });
 
   factory JobType.fromJson(Map<String, dynamic> json) {
     return JobType(
-      id: json['id'].toString(),
-      name: json['name'] ?? '',
-      customFields: (json['fields'] as List? ?? [])
-          .map((f) => JobTypeField.fromJson(f))
-          .toList(),
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      customFields: (json['fields'] is List)
+          ? (json['fields'] as List)
+              .whereType<Map>()
+              .map(
+                (field) => JobTypeField.fromJson(
+                  Map<String, dynamic>.from(field),
+                ),
+              )
+              .toList()
+          : [],
     );
   }
 }
@@ -19,8 +30,8 @@ class JobType {
 class JobTypeField {
   final String key;
   final String label;
-  final String type; // text | date | select | check
-  final List<String>? options; // solo si type == select
+  final String type;
+  final List<String>? options;
 
   JobTypeField({
     required this.key,
@@ -31,10 +42,14 @@ class JobTypeField {
 
   factory JobTypeField.fromJson(Map<String, dynamic> json) {
     return JobTypeField(
-      key: json['key'],
-      label: json['label'],
-      type: json['type'],
-      options: (json['options'] as List?)?.map((e) => e.toString()).toList(),
+      key: json['key']?.toString() ?? '',
+      label: json['label']?.toString() ?? '',
+      type: json['type']?.toString() ?? 'text',
+      options: json['options'] is List
+          ? (json['options'] as List)
+              .map((option) => option.toString())
+              .toList()
+          : null,
     );
   }
 }
