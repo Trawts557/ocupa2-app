@@ -57,14 +57,14 @@ class _MainNavigationViewState extends State<MainNavigationView> {
             label: 'Ofertas',
           ),
           NavigationDestination(
-            icon: Icon(Icons.forum_outlined),
-            selectedIcon: Icon(Icons.forum),
-            label: 'Foro',
-          ),
-          NavigationDestination(
             icon: Icon(Icons.add_business_outlined),
             selectedIcon: Icon(Icons.add_business),
             label: 'Publicar',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.forum_outlined),
+            selectedIcon: Icon(Icons.forum),
+            label: 'Foro',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
@@ -83,9 +83,9 @@ class _MainNavigationViewState extends State<MainNavigationView> {
       case 1:
         return const Center(child: Text('Explorar ofertas'));
       case 2:
-        return const ForumScreen();
-      case 3:
         return const Center(child: Text('Publicar oferta'));
+      case 3:
+        return const ForumScreen();
       case 4:
         return const ProfileView();
       default:
@@ -100,9 +100,9 @@ class _MainNavigationViewState extends State<MainNavigationView> {
       case 1:
         return 'Explorar ofertas';
       case 2:
-        return 'Foro';
-      case 3:
         return 'Publicar oferta';
+      case 3:
+        return 'Foro';
       case 4:
         return 'Mi perfil';
       default:
