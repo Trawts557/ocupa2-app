@@ -5,6 +5,7 @@ import '../forum/forum_screen.dart';
 import '../../services/session_service.dart';
 import '../auth/login_view.dart';
 import 'home_view.dart';
+import '../offers/offers_screen.dart';
 
 class MainNavigationView extends StatefulWidget {
   const MainNavigationView({super.key});
@@ -81,7 +82,7 @@ class _MainNavigationViewState extends State<MainNavigationView> {
       case 0:
         return const HomeView();
       case 1:
-        return const Center(child: Text('Explorar ofertas'));
+        return const OffersScreen();
       case 2:
         return const Center(child: Text('Publicar oferta'));
       case 3:
