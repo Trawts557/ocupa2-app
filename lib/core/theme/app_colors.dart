@@ -28,4 +28,8 @@ class AppColors {
   // Extra UI
   static const Color cardBackground = Colors.white;
   static const Color inputBackground = Color(0xFFF3F4F6);
+
+    // Colores semánticos para estados (agregados por Persona 4)
+  static const Color danger  = Color(0xFFC62828); // rojo: descartado
+  static const Color info    = Color(0xFF546E7A); // gris azulado: en revisión
 }

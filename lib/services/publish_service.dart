@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ocupa2_app/core/networks/api_client.dart';
 import 'package:ocupa2_app/models/job_type.dart';
 import 'package:ocupa2_app/models/offer.dart';
@@ -12,15 +14,17 @@ class PublishService {
   // GET /job-types
   // ============================================================
   Future<List<JobType>> getJobTypes() async {
-    final data = await _api.get('/job-types');
+    final response = await _api.get('/job-types');
 
-    print('RESPUESTA /job-types: $data');
-    print('TIPO /job-types: ${data.runtimeType}');
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        'Error al obtener tipos de empleo '
+        '(${response.statusCode}): ${response.body}',
+      );
+    }
 
-    // Caso 1:
-    // [
-    //   { "id": "...", "name": "...", "fields": [] }
-    // ]
+    final dynamic data = jsonDecode(response.body);
+
     if (data is List) {
       return data
           .map(
@@ -31,17 +35,10 @@ class PublishService {
           .toList();
     }
 
-    // Caso 2:
-    // {
-    //   "ok": true,
-    //   "data": [
-    //      { "id": "...", "name": "...", "fields": [] }
-    //   ]
-    // }
     if (data is Map) {
-      final response = Map<String, dynamic>.from(data);
+      final responseData = Map<String, dynamic>.from(data);
 
-      final innerData = response['data'];
+      final innerData = responseData['data'];
 
       if (innerData is List) {
         return innerData
@@ -55,7 +52,7 @@ class PublishService {
     }
 
     throw Exception(
-      'Formato inesperado en GET /job-types: $data',
+      'Formato inesperado en GET /job-types',
     );
   }
 
@@ -63,26 +60,32 @@ class PublishService {
   // POST /uploads
   // ============================================================
   Future<String> uploadImage(String base64Image) async {
-    final data = await _api.post('/uploads', {
-      'file': base64Image,
-    });
+    final response = await _api.post(
+      '/uploads',
+      body: {
+        'file': base64Image,
+      },
+    );
 
-    print('RESPUESTA /uploads: $data');
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        'Error al subir la imagen '
+        '(${response.statusCode}): ${response.body}',
+      );
+    }
+
+    final dynamic data = jsonDecode(response.body);
 
     if (data is Map) {
-      final response = Map<String, dynamic>.from(data);
+      final responseData = Map<String, dynamic>.from(data);
 
-      // Caso:
-      // { "url": "..." }
-      if (response['url'] != null) {
-        return response['url'].toString();
+      if (responseData['url'] != null) {
+        return responseData['url'].toString();
       }
 
-      // Caso:
-      // { "data": { "url": "..." } }
-      if (response['data'] is Map) {
+      if (responseData['data'] is Map) {
         final innerData = Map<String, dynamic>.from(
-          response['data'],
+          responseData['data'],
         );
 
         if (innerData['url'] != null) {
@@ -100,33 +103,36 @@ class PublishService {
   // POST /offers
   // ============================================================
   Future<Offer> publishOffer(Offer offer) async {
-    final data = await _api.post(
+    final response = await _api.post(
       '/offers',
-      offer.toJson(),
+      body: offer.toJson(),
     );
 
-    print('RESPUESTA /offers: $data');
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        'Error al publicar la oferta '
+        '(${response.statusCode}): ${response.body}',
+      );
+    }
+
+    final dynamic data = jsonDecode(response.body);
 
     if (data is Map) {
-      final response = Map<String, dynamic>.from(data);
+      final responseData = Map<String, dynamic>.from(data);
 
-      // Caso:
-      // { datos directamente de la oferta }
-      if (response['id'] != null) {
-        return Offer.fromJson(response);
+      if (responseData['id'] != null) {
+        return Offer.fromJson(responseData);
       }
 
-      // Caso:
-      // { "data": { datos de la oferta } }
-      if (response['data'] is Map) {
+      if (responseData['data'] is Map) {
         return Offer.fromJson(
-          Map<String, dynamic>.from(response['data']),
+          Map<String, dynamic>.from(responseData['data']),
         );
       }
     }
 
     throw Exception(
-      'Formato inesperado al publicar la oferta: $data',
+      'Formato inesperado al publicar la oferta',
     );
   }
 
@@ -134,9 +140,16 @@ class PublishService {
   // GET /me/offers
   // ============================================================
   Future<List<Offer>> getMyOffers() async {
-    final data = await _api.get('/me/offers');
+    final response = await _api.get('/me/offers');
 
-    print('RESPUESTA /me/offers: $data');
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        'Error al obtener mis ofertas '
+        '(${response.statusCode}): ${response.body}',
+      );
+    }
+
+    final dynamic data = jsonDecode(response.body);
 
     if (data is List) {
       return data
@@ -149,8 +162,8 @@ class PublishService {
     }
 
     if (data is Map) {
-      final response = Map<String, dynamic>.from(data);
-      final innerData = response['data'];
+      final responseData = Map<String, dynamic>.from(data);
+      final innerData = responseData['data'];
 
       if (innerData is List) {
         return innerData
@@ -164,7 +177,7 @@ class PublishService {
     }
 
     throw Exception(
-      'Formato inesperado en GET /me/offers: $data',
+      'Formato inesperado en GET /me/offers',
     );
   }
 
@@ -174,13 +187,18 @@ class PublishService {
   Future<List<Application>> getOfferApplications(
     String offerId,
   ) async {
-    final data = await _api.get(
+    final response = await _api.get(
       '/offers/$offerId/applications',
     );
 
-    print(
-      'RESPUESTA /offers/$offerId/applications: $data',
-    );
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        'Error al obtener las aplicaciones '
+        '(${response.statusCode}): ${response.body}',
+      );
+    }
+
+    final dynamic data = jsonDecode(response.body);
 
     if (data is List) {
       return data
@@ -193,8 +211,8 @@ class PublishService {
     }
 
     if (data is Map) {
-      final response = Map<String, dynamic>.from(data);
-      final innerData = response['data'];
+      final responseData = Map<String, dynamic>.from(data);
+      final innerData = responseData['data'];
 
       if (innerData is List) {
         return innerData
@@ -208,7 +226,7 @@ class PublishService {
     }
 
     throw Exception(
-      'Formato inesperado al obtener aplicaciones: $data',
+      'Formato inesperado al obtener aplicaciones',
     );
   }
 
@@ -230,31 +248,36 @@ class PublishService {
       body['status'] = status;
     }
 
-    final data = await _api.patch(
+    final response = await _api.patch(
       '/applications/$applicationId',
-      body,
+      body: body,
     );
 
-    print(
-      'RESPUESTA PATCH /applications/$applicationId: $data',
-    );
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        'Error al actualizar la aplicación '
+        '(${response.statusCode}): ${response.body}',
+      );
+    }
+
+    final dynamic data = jsonDecode(response.body);
 
     if (data is Map) {
-      final response = Map<String, dynamic>.from(data);
+      final responseData = Map<String, dynamic>.from(data);
 
-      if (response['id'] != null) {
-        return Application.fromJson(response);
+      if (responseData['id'] != null) {
+        return Application.fromJson(responseData);
       }
 
-      if (response['data'] is Map) {
+      if (responseData['data'] is Map) {
         return Application.fromJson(
-          Map<String, dynamic>.from(response['data']),
+          Map<String, dynamic>.from(responseData['data']),
         );
       }
     }
 
     throw Exception(
-      'Formato inesperado al actualizar aplicación: $data',
+      'Formato inesperado al actualizar aplicación',
     );
   }
 
@@ -262,9 +285,16 @@ class PublishService {
   // POST /offers/{id}/deactivate
   // ============================================================
   Future<void> deactivateOffer(String offerId) async {
-    await _api.post(
+    final response = await _api.post(
       '/offers/$offerId/deactivate',
-      {},
+      body: {},
     );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        'No se pudo desactivar la oferta '
+        '(${response.statusCode}): ${response.body}',
+      );
+    }
   }
 }
