@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/contract_service.dart';
+import 'dart:convert';
+import 'package:image_picker/image_picker.dart';
 
 class ContractDetailView extends StatefulWidget {
   final String contractId;
@@ -12,6 +14,7 @@ class ContractDetailView extends StatefulWidget {
 
 class _ContractDetailViewState extends State<ContractDetailView> {
   final ContractService _contractService = ContractService();
+  final ImagePicker _imagePicker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
@@ -190,13 +193,10 @@ class _ContractDetailViewState extends State<ContractDetailView> {
           ElevatedButton(onPressed: _addComment, child: const Text('Comentar')),
 
         if (status == 'active')
-          OutlinedButton(
-            onPressed: () {
-              // TODO:
-              // Seleccionar imagen y enviarla mediante
-              // POST /contracts/{id}/photos
-            },
-            child: const Text('Agregar foto'),
+          OutlinedButton.icon(
+            onPressed: _addPhoto,
+            icon: const Icon(Icons.add_photo_alternate_outlined),
+            label: const Text('Agregar foto'),
           ),
 
         if (status == 'active')
@@ -253,6 +253,96 @@ class _ContractDetailViewState extends State<ContractDetailView> {
     }
 
     return '$salary $currency';
+  }
+
+  Future<void> _addPhoto() async {
+    final XFile? image = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 75,
+    );
+
+    if (image == null) return;
+
+    if (!mounted) return;
+
+    final descriptionController = TextEditingController();
+
+    final String? description = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Agregar foto'),
+          content: TextField(
+            controller: descriptionController,
+            maxLines: 3,
+            decoration: const InputDecoration(
+              labelText: 'Descripción',
+              hintText: 'Describe esta foto',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, descriptionController.text.trim());
+              },
+              child: const Text('Subir'),
+            ),
+          ],
+        );
+      },
+    );
+
+    descriptionController.dispose();
+
+    if (description == null || description.isEmpty) return;
+
+    try {
+      final bytes = await image.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final extension = image.name.split('.').last.toLowerCase();
+
+      final mimeType = extension == 'png' ? 'image/png' : 'image/jpeg';
+
+      final dataUri = 'data:$mimeType;base64,$base64Image';
+
+      await _contractService.addPhoto(
+        id: widget.contractId,
+        photo: dataUri,
+        description: description,
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Foto agregada correctamente')),
+      );
+
+      await _contractService.addPhoto(
+        id: widget.contractId,
+        photo: dataUri,
+        description: description,
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Foto agregada correctamente')),
+      );
+
+      setState(() {});
+      
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+      );
+    }
   }
 
   Future<void> _acceptContract() async {

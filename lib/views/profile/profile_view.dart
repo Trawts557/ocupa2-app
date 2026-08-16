@@ -7,6 +7,7 @@ import 'package:ocupa2_app/views/news/news_screen.dart';
 import 'package:ocupa2_app/views/videos/videos_screen.dart';
 import 'package:ocupa2_app/views/about/about_screen.dart';
 import 'package:ocupa2_app/views/auth/change_password_view.dart';
+import 'package:ocupa2_app/views/contracts/contracts_view.dart';
 
 /// Dashboard principal del perfil (Persona 4).
 /// Contiene accesos a: Experiencias, Aplicaciones, Noticias, Videos,
@@ -44,6 +45,17 @@ class ProfileView extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (_) => const ApplicationsTrackingScreen(),
                 ),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            _ProfileMenuCard(
+              icon: Icons.description_outlined,
+              title: 'Mis Contratos',
+              subtitle: 'Consulta y administra tus contratos',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ContractsView()),
               ),
             ),
             const SizedBox(height: 12),
@@ -139,8 +151,8 @@ class _ProfileMenuCard extends StatelessWidget {
                     Text(
                       title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
