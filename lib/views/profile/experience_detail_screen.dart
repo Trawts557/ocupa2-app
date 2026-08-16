@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:ocupa2_app/core/theme/app_colors.dart';
 import 'package:ocupa2_app/models/experience.dart';

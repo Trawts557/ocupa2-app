@@ -8,8 +8,7 @@ class MainNavigationView extends StatefulWidget {
   const MainNavigationView({super.key});
 
   @override
-  State<MainNavigationView> createState() =>
-      _MainNavigationViewState();
+  State<MainNavigationView> createState() => _MainNavigationViewState();
 }
 
 class _MainNavigationViewState extends State<MainNavigationView> {
@@ -63,6 +62,11 @@ class _MainNavigationViewState extends State<MainNavigationView> {
             label: 'Publicar',
           ),
           NavigationDestination(
+            icon: Icon(Icons.forum_outlined),
+            selectedIcon: Icon(Icons.forum),
+            label: 'Foro',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),
             label: 'Perfil',
@@ -78,22 +82,23 @@ class _MainNavigationViewState extends State<MainNavigationView> {
         return const HomeView();
 
       case 1:
-        // TODO: Reemplazar por la vista real de Persona 2.
+        // TODO: Reemplazar por la vista real de Persona 2 - te estamos esperando Gabriel.
         // return const OffersView();
-        return const Center(
-          child: Text('Explorar ofertas'),
-        );
+        return const Center(child: Text('Explorar ofertas'));
 
       case 2:
-        // TODO: Reemplazar por la vista real de Persona 3.
+        // TODO: Reemplazar por la vista real de Persona 3 - te estamos esperando Mayelin.
         // return const PublishOfferView();
-        return const Center(
-          child: Text('Publicar oferta'),
-        );
+        return const Center(child: Text('Publicar oferta'));
 
       case 3:
-         return const ProfileView();
-      
+      // TODO: Jesus aqui pondras lo del foro - te manda saludos Stwart.
+      // return const ForumView();;
+      return const Center(child: Text('Foro'));
+
+      case 4:
+      return const ProfileView();
+
       default:
         return const HomeView();
     }
@@ -111,6 +116,9 @@ class _MainNavigationViewState extends State<MainNavigationView> {
         return 'Publicar oferta';
 
       case 3:
+        return 'Foro';
+
+      case 4:
         return 'Mi perfil';
 
       default:
@@ -125,9 +133,7 @@ class _MainNavigationViewState extends State<MainNavigationView> {
 
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(
-        builder: (context) => const LoginView(),
-      ),
+      MaterialPageRoute(builder: (context) => const LoginView()),
       (route) => false,
     );
   }
