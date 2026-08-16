@@ -1,166 +1,117 @@
 import 'package:flutter/material.dart';
 
-import '../../services/session_service.dart';
-import '../auth/login_view.dart';
-import '../offers/offers_screen.dart';
-import '../applications/tracking/my_applications_screen.dart';
-
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final SessionService sessionService = SessionService();
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 12),
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ocupa2'),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await sessionService.deleteToken();
-
-              if (!context.mounted) return;
-
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LoginView(),
-                ),
-                    (route) => false,
-              );
-            },
-            icon: const Icon(Icons.logout),
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Bienvenido a Ocupa2',
-                style: TextStyle(
-                  fontSize: 26,
+          Text(
+            'Encuentra oportunidades cerca de ti',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
-              ),
-
-              const SizedBox(height: 8),
-
-              const Text(
-                'Encuentra oportunidades de empleo y postúlate.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
-                ),
-              ),
-
-              const SizedBox(height: 30),
-
-              // Ofertas de empleo
-              _HomeCard(
-                icon: Icons.work_outline,
-                color: Colors.blue,
-                title: 'Ofertas de empleo',
-                subtitle: 'Explora las ofertas disponibles',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const OffersScreen(),
-                    ),
-                  );
-                },
-              ),
-
-              const SizedBox(height: 16),
-
-              // Mis postulaciones
-              _HomeCard(
-                icon: Icons.assignment_outlined,
-                color: Colors.green,
-                title: 'Mis postulaciones',
-                subtitle: 'Consulta tus postulaciones',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const MyApplicationsScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
           ),
-        ),
+
+          const SizedBox(height: 12),
+
+          Text(
+            'Ocupa2 conecta personas que necesitan realizar un trabajo '
+            'con personas dispuestas a hacerlo.',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+
+          const SizedBox(height: 28),
+
+          _buildPresentationCard(
+            context,
+            icon: Icons.search,
+            title: 'Encuentra oportunidades',
+            description:
+                'Explora ofertas de trabajo y encuentra la que mejor se adapte a ti.',
+          ),
+
+          const SizedBox(height: 12),
+
+          _buildPresentationCard(
+            context,
+            icon: Icons.work_outline,
+            title: 'Publica trabajos',
+            description:
+                'Publica una necesidad y encuentra personas interesadas en realizarla.',
+          ),
+
+          const SizedBox(height: 12),
+
+          _buildPresentationCard(
+            context,
+            icon: Icons.handshake_outlined,
+            title: 'Conecta y trabaja',
+            description:
+                'Gestiona tus aplicaciones y contratos desde un mismo lugar.',
+          ),
+
+          const SizedBox(height: 28),
+
+          Center(
+            child: Text(
+              'Tu próxima oportunidad puede estar más cerca de lo que imaginas.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+        ],
       ),
     );
   }
-}
 
-class _HomeCard extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
+  Widget _buildPresentationCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String description,
+  }) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 38,
+              color: Theme.of(context).colorScheme.primary,
+            ),
 
-  const _HomeCard({
-    required this.icon,
-    required this.color,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
+            const SizedBox(width: 16),
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 120,
-      child: Card(
-        child: InkWell(
-          borderRadius: BorderRadius.circular(14),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Icon(
-                  icon,
-                  size: 45,
-                  color: color,
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 19,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        subtitle,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
                   ),
-                ),
-                const Icon(Icons.arrow_forward_ios),
-              ],
+
+                  const SizedBox(height: 6),
+
+                  Text(description),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
