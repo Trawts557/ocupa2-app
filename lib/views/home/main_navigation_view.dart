@@ -11,30 +11,25 @@ import '../profile/profile_view.dart';
 import '../publish/publish_offer_screen.dart';
 
 import 'home_view.dart';
+import '../offers/offers_screen.dart';
 
-class MainNavigationView
-    extends StatefulWidget {
+class MainNavigationView extends StatefulWidget {
   const MainNavigationView({
     super.key,
   });
 
   @override
-  State<MainNavigationView>
-      createState() =>
-          _MainNavigationViewState();
+  State<MainNavigationView> createState() => _MainNavigationViewState();
 }
 
-class _MainNavigationViewState
-    extends State<MainNavigationView> {
-
+class _MainNavigationViewState extends State<MainNavigationView> {
   int _selectedIndex = 0;
 
   // ============================================================
   // API CLIENT
   // ============================================================
 
-  final ApiClient _apiClient =
-      ApiClient();
+  final ApiClient _apiClient = ApiClient();
 
   // ============================================================
   // BUILD
@@ -48,57 +43,41 @@ class _MainNavigationViewState
       appBar: AppBar(
         title: Text(
           _getTitle(),
-          style:
-              const TextStyle(
+          style: const TextStyle(
             color: Colors.white,
-            fontWeight:
-                FontWeight.w600,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor:
-            Theme.of(context)
-                .colorScheme
-                .primary,
-        foregroundColor:
-            Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
         actions: [
           IconButton(
-            tooltip:
-                'Cerrar sesión',
-            onPressed:
-                _logout,
-            icon:
-                const Icon(
+            tooltip: 'Cerrar sesión',
+            onPressed: _logout,
+            icon: const Icon(
               Icons.logout,
             ),
           ),
         ],
       ),
 
-      body:
-          _getSelectedView(),
+      body: _getSelectedView(),
 
-      bottomNavigationBar:
-          NavigationBar(
-        selectedIndex:
-            _selectedIndex,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
 
-        onDestinationSelected:
-            (index) {
+        onDestinationSelected: (index) {
           setState(() {
-            _selectedIndex =
-                index;
+            _selectedIndex = index;
           });
         },
 
-        destinations:
-            const [
+        destinations: const [
           NavigationDestination(
             icon: Icon(
               Icons.home_outlined,
             ),
-            selectedIcon:
-                Icon(Icons.home),
+            selectedIcon: Icon(Icons.home),
             label: 'Inicio',
           ),
 
@@ -106,18 +85,15 @@ class _MainNavigationViewState
             icon: Icon(
               Icons.search_outlined,
             ),
-            selectedIcon:
-                Icon(Icons.search),
+            selectedIcon: Icon(Icons.search),
             label: 'Ofertas',
           ),
 
           NavigationDestination(
             icon: Icon(
-              Icons
-                  .add_business_outlined,
+              Icons.add_business_outlined,
             ),
-            selectedIcon:
-                Icon(
+            selectedIcon: Icon(
               Icons.add_business,
             ),
             label: 'Publicar',
@@ -127,8 +103,7 @@ class _MainNavigationViewState
             icon: Icon(
               Icons.forum_outlined,
             ),
-            selectedIcon:
-                Icon(Icons.forum),
+            selectedIcon: Icon(Icons.forum),
             label: 'Foro',
           ),
 
@@ -136,8 +111,7 @@ class _MainNavigationViewState
             icon: Icon(
               Icons.person_outline,
             ),
-            selectedIcon:
-                Icon(Icons.person),
+            selectedIcon: Icon(Icons.person),
             label: 'Perfil',
           ),
         ],
@@ -151,25 +125,18 @@ class _MainNavigationViewState
 
   Widget _getSelectedView() {
     switch (_selectedIndex) {
-
       case 0:
         return const HomeView();
 
       case 1:
-        return const Center(
-          child: Text(
-            'Explorar ofertas',
-          ),
-        );
+        return const OffersScreen();
 
       case 2:
         return PublishOfferScreen(
-          publishService:
-              PublishService(
+          publishService: PublishService(
             _apiClient,
           ),
-          paymentService:
-              PaymentService(
+          paymentService: PaymentService(
             _apiClient,
           ),
         );
@@ -191,7 +158,6 @@ class _MainNavigationViewState
 
   String _getTitle() {
     switch (_selectedIndex) {
-
       case 0:
         return 'Ocupa2';
 
@@ -217,16 +183,14 @@ class _MainNavigationViewState
   // ============================================================
 
   Future<void> _logout() async {
-    await SessionService()
-        .deleteToken();
+    await SessionService().deleteToken();
 
     if (!mounted) return;
 
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            const LoginView(),
+        builder: (context) => const LoginView(),
       ),
       (route) => false,
     );
