@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.ocupa2_app"
-    compileSdk = 37
+    compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
