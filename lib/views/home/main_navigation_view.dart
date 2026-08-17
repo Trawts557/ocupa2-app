@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../core/networks/api_client.dart';
-import '../../services/payment_service.dart';
-import '../../services/publish_service.dart';
 import '../profile/profile_view.dart';
 import '../forum/forum_screen.dart';
 import '../../services/session_service.dart';
 import '../auth/login_view.dart';
 import 'home_view.dart';
-import '../offers/offers_screen.dart';
-import '../publish/publish_offer_screen.dart';
+import '../offers/offers_screen.dart' as offers;
+import '../publish/publish_offer_screen.dart' as publish;
 
 class MainNavigationView extends StatefulWidget {
   const MainNavigationView({super.key});
@@ -86,12 +83,9 @@ class _MainNavigationViewState extends State<MainNavigationView> {
       case 0:
         return const HomeView();
       case 1:
-        return const OffersScreen();
+        return const offers.OffersScreen() as Widget;
       case 2:
-        return PublishOfferScreen(
-          publishService: PublishService(ApiClient()),
-          paymentService: PaymentService(ApiClient()),
-        );
+        return const publish.PublishOfferScreen() as Widget;
       case 3:
         return const ForumScreen();
       case 4:

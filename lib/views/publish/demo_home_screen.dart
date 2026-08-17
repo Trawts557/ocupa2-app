@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ocupa2_app/core/networks/api_client.dart';
 import 'package:ocupa2_app/services/publish_service.dart';
-import 'package:ocupa2_app/services/payment_service.dart';
 import 'package:ocupa2_app/services/contract_service.dart';
 
 import 'publish_offer_screen.dart';
@@ -18,7 +17,6 @@ class DemoHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final publishService = PublishService(apiClient);
-    final paymentService = PaymentService(apiClient);
     final contractService = ContractService();
     return Scaffold(
       appBar: AppBar(
@@ -49,10 +47,7 @@ class DemoHomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => PublishOfferScreen(
-                      publishService: publishService,
-                      paymentService: paymentService,
-                    ),
+                    builder: (_) => const PublishOfferScreen(),
                   ),
                 );
               },

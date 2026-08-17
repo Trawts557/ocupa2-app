@@ -114,6 +114,9 @@ class OfferPayment {
       currency: json['currency']?.toString() ?? '',
     );
   }
+
+  // Se agregó el tipo explícito 'dynamic' para cumplir con strict_top_level_inference
+  dynamic get period => null;
 }
 
 class OfferQuestion {

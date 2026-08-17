@@ -66,7 +66,7 @@ class _MyOffersScreenState extends State<MyOffersScreen> {
                   title: Text(offer.description),
                   subtitle: Text(
                     '${offer.address}\n'
-                    'RD\$${offer.pay.toStringAsFixed(2)}',
+                    'RD\$${offer.payment.amount.toStringAsFixed(2)}',
                   ),
                   isThreeLine: true,
                   trailing: offer.active

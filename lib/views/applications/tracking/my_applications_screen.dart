@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models/offer.dart';
 import '../../../services/offer_service.dart';
-import '../../offers/offers_screen.dart';
 
 class MyApplicationsScreen extends StatefulWidget {
   const MyApplicationsScreen({super.key});
@@ -42,8 +41,42 @@ class _MyApplicationsScreenState
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => OfferDetailScreen(
-          offer: offer,
+        builder: (_) => Scaffold(
+          appBar: AppBar(
+            title: Text(
+              offer.jobTypeName.isNotEmpty
+                  ? offer.jobTypeName
+                  : 'Detalle de Oferta',
+            ),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Tipo de trabajo: ${offer.jobTypeName}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Dirección: ${offer.address.isNotEmpty ? offer.address : "No especificada"}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Pago: ${offer.payment.amount} ${offer.payment.currency}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

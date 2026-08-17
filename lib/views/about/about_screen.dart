@@ -111,7 +111,6 @@ class _TeamMember {
   final String matricula;
   final String phone;
   final String telegram;
-  final String? photoUrl;
 
   const _TeamMember({
     required this.name,
@@ -119,7 +118,6 @@ class _TeamMember {
     required this.matricula,
     required this.phone,
     required this.telegram,
-    this.photoUrl,
   });
 }
 
@@ -142,18 +140,13 @@ class _TeamMemberCard extends StatelessWidget {
                 CircleAvatar(
                   radius: 28,
                   backgroundColor: AppColors.primary.withValues(alpha: 0.15),
-                  backgroundImage: member.photoUrl != null
-                      ? NetworkImage(member.photoUrl!)
-                      : null,
-                  child: member.photoUrl == null
-                      ? Text(
-                          _initials(member.name),
-                          style: const TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        )
-                      : null,
+                  child: Text(
+                    _initials(member.name),
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(

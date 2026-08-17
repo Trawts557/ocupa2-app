@@ -29,8 +29,8 @@ class _ApplyScreenState extends State<ApplyScreen> {
     super.initState();
 
     for (final question in widget.offer.questions) {
-      if (question.type == 'text') {
-        _answerControllers[question.id] = TextEditingController();
+      if (question.type == 'text' && question.id != null) {
+        _answerControllers[question.id!] = TextEditingController();
       }
     }
   }
@@ -49,15 +49,15 @@ class _ApplyScreenState extends State<ApplyScreen> {
   Future<void> _submitApplication() async {
     // Validar preguntas obligatorias
     for (final question in widget.offer.questions) {
-      if (!question.required) {
+      if (!question.required || question.id == null) {
         continue;
       }
 
-      final controller = _answerControllers[question.id];
+      final controller = _answerControllers[question.id!];
 
       if (controller != null && controller.text.trim().isEmpty) {
         _showMessage(
-          'Debes responder: ${question.label}',
+          'Debes responder: ${question.label }',
           isError: true,
         );
         return;
@@ -67,11 +67,13 @@ class _ApplyScreenState extends State<ApplyScreen> {
     final answers = <Map<String, String>>[];
 
     for (final question in widget.offer.questions) {
-      final controller = _answerControllers[question.id];
+      if (question.id == null) continue;
+      
+      final controller = _answerControllers[question.id!];
 
       if (controller != null && controller.text.trim().isNotEmpty) {
         answers.add({
-          'questionId': question.id,
+          'questionId': question.id!,
           'value': controller.text.trim(),
         });
       }
@@ -162,9 +164,11 @@ class _ApplyScreenState extends State<ApplyScreen> {
   }
 
   Widget _buildTextQuestion(OfferQuestion question) {
+    if (question.id == null) return const SizedBox.shrink();
+    
     final controller = _answerControllers.putIfAbsent(
-      question.id,
-          () => TextEditingController(),
+      question.id!,
+      () => TextEditingController(),
     );
 
     return Padding(
@@ -173,7 +177,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
         controller: controller,
         maxLines: 3,
         decoration: InputDecoration(
-          labelText: question.label,
+          labelText: question.label ,
           hintText: question.required
               ? 'Respuesta obligatoria'
               : 'Respuesta opcional',
@@ -183,9 +187,11 @@ class _ApplyScreenState extends State<ApplyScreen> {
   }
 
   Widget _buildDateQuestion(OfferQuestion question) {
+    if (question.id == null) return const SizedBox.shrink();
+
     final controller = _answerControllers.putIfAbsent(
-      question.id,
-          () => TextEditingController(),
+      question.id!,
+      () => TextEditingController(),
     );
 
     return Padding(
@@ -194,7 +200,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
         controller: controller,
         readOnly: true,
         decoration: InputDecoration(
-          labelText: question.label,
+          labelText: question.label ,
           suffixIcon: const Icon(Icons.calendar_today_outlined),
         ),
         onTap: () async {
@@ -217,9 +223,11 @@ class _ApplyScreenState extends State<ApplyScreen> {
   }
 
   Widget _buildSelectQuestion(OfferQuestion question) {
+    if (question.id == null) return const SizedBox.shrink();
+
     final controller = _answerControllers.putIfAbsent(
-      question.id,
-          () => TextEditingController(),
+      question.id!,
+      () => TextEditingController(),
     );
 
     return Padding(
@@ -227,7 +235,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
-          labelText: question.label,
+          labelText: question.label ,
           hintText: 'Escribe tu respuesta',
         ),
       ),
@@ -235,9 +243,11 @@ class _ApplyScreenState extends State<ApplyScreen> {
   }
 
   Widget _buildCheckQuestion(OfferQuestion question) {
+    if (question.id == null) return const SizedBox.shrink();
+
     final controller = _answerControllers.putIfAbsent(
-      question.id,
-          () => TextEditingController(),
+      question.id!,
+      () => TextEditingController(),
     );
 
     return Padding(
@@ -249,7 +259,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
             controller.text = value == true ? 'true' : 'false';
           });
         },
-        title: Text(question.label),
+        title: Text(question.label  ),
         contentPadding: EdgeInsets.zero,
         activeColor: AppColors.secondary,
         controlAffinity: ListTileControlAffinity.leading,
@@ -281,9 +291,9 @@ class _ApplyScreenState extends State<ApplyScreen> {
 
             const SizedBox(height: 8),
 
-            Text(
+            const Text(
               'Completa la información para enviar tu postulación.',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 15,
               ),
