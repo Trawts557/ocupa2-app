@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 
-import '../profile/profile_view.dart';
+import 'package:ocupa2_app/core/theme/app_colors.dart';
+import '../profile/profile_view.dart' as dashboard;
 import '../forum/forum_screen.dart';
+import '../offers/offers_screen.dart';
+import '../employer/create_offer_screen.dart';
 import '../../services/session_service.dart';
 import '../auth/login_view.dart';
 import 'home_view.dart';
-import '../offers/offers_screen.dart';
 
-class MainNavigationView extends StatefulWidget {
-  const MainNavigationView({super.key});
+/// Navegación principal de la app con 5 pestañas.
+/// Se llama ProfileView como en el diseño original del equipo.
+class ProfileView extends StatefulWidget {
+  const ProfileView({super.key});
 
   @override
-  State<MainNavigationView> createState() => _MainNavigationViewState();
+  State<ProfileView> createState() => _ProfileViewState();
 }
 
-class _MainNavigationViewState extends State<MainNavigationView> {
+class _ProfileViewState extends State<ProfileView> {
   int _selectedIndex = 0;
 
   @override
@@ -84,14 +88,56 @@ class _MainNavigationViewState extends State<MainNavigationView> {
       case 1:
         return const OffersScreen();
       case 2:
-        return const Center(child: Text('Publicar oferta'));
+        return _buildPublishLauncher();
       case 3:
         return const ForumScreen();
       case 4:
-        return const ProfileView();
+        // Usa el ALIAS para referirse al dashboard de perfil
+        return const dashboard.ProfileView();
       default:
         return const HomeView();
     }
+  }
+
+  /// Pantalla de la pestaña "Publicar": lanza el flujo completo.
+  Widget _buildPublishLauncher() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.add_business_outlined,
+              size: 80,
+              color: AppColors.primary.withValues(alpha: 0.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              '¿Necesitas contratar a alguien?',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Publica una oferta y encuentra personas interesadas en realizarla.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const CreateOfferScreen(),
+                ),
+              ),
+              icon: const Icon(Icons.add),
+              label: const Text('Publicar oferta'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   String _getTitle() {
@@ -113,7 +159,9 @@ class _MainNavigationViewState extends State<MainNavigationView> {
 
   Future<void> _logout() async {
     await SessionService().deleteToken();
+
     if (!mounted) return;
+
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginView()),

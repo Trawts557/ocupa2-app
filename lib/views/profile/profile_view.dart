@@ -8,10 +8,10 @@ import 'package:ocupa2_app/views/videos/videos_screen.dart';
 import 'package:ocupa2_app/views/about/about_screen.dart';
 import 'package:ocupa2_app/views/auth/change_password_view.dart';
 import 'package:ocupa2_app/views/contracts/contracts_view.dart';
+import 'package:ocupa2_app/views/employer/my_offers_screen.dart';
+import 'package:ocupa2_app/views/employer/create_offer_screen.dart';
 
-/// Dashboard principal del perfil (Persona 4).
-/// Contiene accesos a: Experiencias, Aplicaciones, Noticias, Videos,
-/// Acerca de y Cambiar contraseña.
+/// Dashboard principal del perfil (Persona 4 + Persona 3).
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
 
@@ -23,7 +23,15 @@ class ProfileView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              'Mi cuenta',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             const SizedBox(height: 16),
+
+            // ============================================
+            // PERSONA 4 - Mis módulos
+            // ============================================
 
             _ProfileMenuCard(
               icon: Icons.work_outline,
@@ -93,7 +101,6 @@ class ProfileView extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // NUEVO: acceso al módulo de Persona 1
             _ProfileMenuCard(
               icon: Icons.lock_outline,
               title: 'Cambiar contraseña',
@@ -101,6 +108,38 @@ class ProfileView extends StatelessWidget {
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const ChangePasswordView()),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // ============================================
+            // PERSONA 3 - Módulos del empleador
+            // ============================================
+
+            Text(
+              'Como empleador',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 16),
+
+            _ProfileMenuCard(
+              icon: Icons.add_business,
+              title: 'Publicar oferta',
+              subtitle: 'Paga y publica un nuevo empleo',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CreateOfferScreen()),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            _ProfileMenuCard(
+              icon: Icons.business_center,
+              title: 'Mis ofertas',
+              subtitle: 'Gestiona tus ofertas publicadas y aplicantes',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MyOffersScreen()),
               ),
             ),
           ],
@@ -151,8 +190,8 @@ class _ProfileMenuCard extends StatelessWidget {
                     Text(
                       title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
