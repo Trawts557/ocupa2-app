@@ -24,8 +24,11 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.13.1
+  
+  flutter_launcher_icons: ^0.14.4
   flutter_lints: ^6.0.0
+
+
 
 flutter:
   uses-material-design: true
@@ -33,4 +36,5 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/icon/icon.png"
+  image_path: "assets/icon/ocupa2_icon.png"
+  min_sdk_android: 21
