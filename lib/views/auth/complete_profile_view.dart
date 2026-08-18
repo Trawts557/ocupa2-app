@@ -222,7 +222,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const MainNavigationView()),
+        MaterialPageRoute(builder: (context) => const ProfileView()),
       );
     } catch (e) {
       if (!mounted) return;
