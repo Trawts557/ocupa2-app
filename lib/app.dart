@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'views/home/main_navigation_view.dart' as mainMenu;
 import 'core/theme/app_theme.dart';
 import 'services/session_service.dart';
 import 'views/auth/login_view.dart';
-import 'views/home/home_view.dart';
 
 class Ocupa2App extends StatelessWidget {
   const Ocupa2App({super.key});
@@ -28,7 +27,7 @@ class Ocupa2App extends StatelessWidget {
           }
 
           if (snapshot.data == true) {
-            return const HomeView();
+            return const mainMenu.ProfileView();
           }
 
           return const LoginView();
